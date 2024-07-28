@@ -27,8 +27,7 @@ public class AutoMOTD implements Listener {
 
     private String cachedDescription = null;
     private Favicon cachedFavicon = null;
-    private boolean newDataAvailable = false;
-    private long lastSaveTime = 0;
+    private boolean dataWasLoaded = false;
 
     public AutoMOTD(ServerInfo defaultS, File pluginFolder, Logger mylogger) {
         this.defaultServer = defaultS;
@@ -69,11 +68,17 @@ public class AutoMOTD implements Listener {
                         (cachedFavicon == null && newFavicon != null) ||
                         (cachedFavicon != null && !cachedFavicon.equals(newFavicon))) {
 
-                    executorService.submit(() -> savePingData(result));
+                    if (dataWasLoaded) {
+                        executorService.submit(() -> savePingData(result));
+                        dataWasLoaded = false;
+                    }
+
+                    cachedDescription = newDescription;
+                    cachedFavicon = newFavicon;
                 }
 
             } else {
-                if (newDataAvailable) {
+                if (dataWasLoaded) {
                     loadPingData();
                 }
                 if (cachedDescription != null) {
@@ -98,12 +103,6 @@ public class AutoMOTD implements Listener {
     }
 
     private void savePingData(ServerPing result) {
-        long currentTime = System.currentTimeMillis();
-
-        if (currentTime - lastSaveTime < 30000) {
-            return;
-        }
-
         try (ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(cacheFile.toPath()))) {
             oos.writeObject(result.getDescriptionComponent().toLegacyText());
 
@@ -113,12 +112,6 @@ public class AutoMOTD implements Listener {
             } else {
                 oos.writeObject(null);
             }
-
-            cachedDescription = result.getDescriptionComponent().toLegacyText();
-            cachedFavicon = result.getFaviconObject();
-            newDataAvailable = true;
-
-            lastSaveTime = System.currentTimeMillis();
 
             logger.info("Ping data saved asynchronously.");
 
@@ -130,6 +123,7 @@ public class AutoMOTD implements Listener {
     private void loadPingData() {
         if (!cacheFile.exists() || cacheFile.length() == 0) {
             logger.warning("Cache file does not exist or is empty. Using default values.");
+            dataWasLoaded = true;
             return;
         }
 
@@ -142,12 +136,12 @@ public class AutoMOTD implements Listener {
                 cachedFavicon = null;
             }
 
-            newDataAvailable = false;
-
+            dataWasLoaded = true;
             logger.info("Ping data loaded from cache.");
 
         } catch (IOException | ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Failed to load ping data", e);
+            dataWasLoaded = true;
         }
     }
 
