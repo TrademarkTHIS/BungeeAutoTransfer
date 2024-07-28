@@ -1,0 +1,3 @@
+name: AutoTransfer
+version: '${project.version}'
+main: arcademadness.autotransfer.AutoTransfer
