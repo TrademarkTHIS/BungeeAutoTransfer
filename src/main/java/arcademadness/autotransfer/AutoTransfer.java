@@ -51,6 +51,7 @@ public final class AutoTransfer extends Plugin implements Listener {
             getLogger().warning("Default or fallback server not set correctly!");
         } else {
             getProxy().getPluginManager().registerListener(this, this);
+            getProxy().getPluginManager().registerListener(this, new AutoMoveFromCrash(fallbackServer, getLogger()));
 
             if (enableAutoMOTD) {
                 getProxy().getPluginManager().registerListener(this, new AutoMOTD(defaultServer, pluginFolder, getLogger()));
