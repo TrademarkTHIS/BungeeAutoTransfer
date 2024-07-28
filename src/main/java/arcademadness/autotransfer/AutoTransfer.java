@@ -119,8 +119,8 @@ public final class AutoTransfer extends Plugin implements Listener {
     private void stopPinging() {
         if (pingTask != null) {
             pingTask.cancel();
-            pingTask = null; // Clear the task reference
-            isPinging = false; // Set pinging flag to false
+            pingTask = null;
+            isPinging = false;
             getLogger().info("All players transferred, stopping pinging.");
         }
     }
