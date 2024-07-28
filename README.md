@@ -2,4 +2,4 @@
 
 ## Description
 
-Uses the priority system built into BungeeCord. If your default server is down, this plugin will perform a repeated check to see if it's back online and move all of your players out of the fall back to it once it becomes online. Used in my [Wake-on-LAN project](https://github.com/TrademarkTHIS/BungeeWoL)
+Uses the priority system built into BungeeCord to determine which server is the default and which is the fall back. when your default server is down, this plugin will perform a repeated check to see when it comes back online. Once it comes online, the plugin moves all of the players from the fallback to the host. This plugin is used in my [Wake-on-LAN project](https://github.com/TrademarkTHIS/BungeeWoL) which i reccomend you check out if you haven't yet.
